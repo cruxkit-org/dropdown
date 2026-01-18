@@ -5,8 +5,8 @@
 	"repo": {
 		"org"           : "cruxkit",
 		"name"          : "dropdown",
-		"version"       : "0.0.1",
-		"desc"          : "..",
+		"version"       : "0.0.2",
+		"desc"          : "Composable dropdown primitive for the CruxKit ecosystem, built on @minejs/jsx.",
 		"kw"            : ["crux", "kit", "dropdown"],
 		"license"       : "MIT",
 		"issues"        : "https://github.com/cruxkit-org/dropdown/issues",
