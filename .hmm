@@ -1,0 +1,23 @@
+{
+	"type"              : "lib",
+	"template"          : "clean",
+	"pm"                : "bun",
+	"repo": {
+		"org"           : "cruxkit",
+		"name"          : "dropdown",
+		"version"       : "0.0.1",
+		"desc"          : "..",
+		"kw"            : ["crux", "kit", "dropdown"],
+		"license"       : "MIT",
+		"issues"        : "https://github.com/cruxkit-org/dropdown/issues",
+		"homepage"      : "https://github.com/cruxkit-org/dropdown#readme",
+		"git_url"       : "git+https://github.com/cruxkit-org/dropdown.git"
+	},
+	"author": {
+		"id"            : "maysara-elshewehy",
+		"name"          : "Maysara",
+		"email"         : "maysara.elshewehy@gmail.com",
+		"url"           : "https://github.com/maysara-elshewehy"
+	},
+	"createdAt"         : "2026-01-17T02:59:08.239Z"
+}
