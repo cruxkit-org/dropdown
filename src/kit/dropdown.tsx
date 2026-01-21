@@ -340,7 +340,7 @@
                         }}
                         className="transition-transform duration-200"
                     >
-                        <Icon name={'chevron-down' as IconName} size="sm" />
+                        <Icon name={'chevron-down' as IconName} size="xs" />
                     </span>
                 );
             };
