@@ -4,10 +4,10 @@
     "": {
       "name": "@cruxkit/icon",
       "dependencies": {
-        "@cruxkit/button": "^0.0.7",
+        "@cruxkit/button": "^0.0.8",
         "@cruxkit/container": "^0.0.5",
         "@cruxkit/divider": "^0.0.3",
-        "@cruxkit/icon": "^0.0.5",
+        "@cruxkit/icon": "^0.0.6",
         "@cruxkit/text": "^0.0.2",
         "@minejs/jsx": "^0.1.4",
       },
@@ -44,7 +44,7 @@
 
     "@cruxjs/client": ["@cruxjs/client@0.2.2", "", { "dependencies": { "@cruxjs/base": "^0.1.8", "@cruxkit/core": "^0.0.2", "@minejs/browser": "^0.0.4", "@minejs/i18n": "^0.1.4", "@minejs/jsx": "^0.1.2", "@minejs/signals": "^0.0.6", "@minejs/store": "^0.0.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-ipqd3dIOLRmzTBrMuUvIJKQYfWQ5byXEauCZbUsM4fPpqr4bsWm+78QlHKwNC2lakdb+7RMMCIhH2KS5wq6vOA=="],
 
-    "@cruxkit/button": ["@cruxkit/button@0.0.7", "", { "dependencies": { "@cruxjs/client": "^0.2.2", "@cruxkit/container": "^0.0.2", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-6s3DOL8UYYSc0yso5fVh3SAfwQvu6CjSsytgcEq9KOAiJlcgPWJAAOmgeep2zi/yZ7ycgNZYIz02o3JWC/PDEg=="],
+    "@cruxkit/button": ["@cruxkit/button@0.0.8", "", { "dependencies": { "@cruxjs/client": "^0.2.2", "@cruxkit/container": "^0.0.2", "@cruxkit/icon": "^0.0.6", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-VAXhuXYbfIubADW9rM7R8xR+UetKU0QzViC/avxGHneBV4vyhWyYZZPw55W1wOzelUI7OHSI0GEzcElykndh0g=="],
 
     "@cruxkit/container": ["@cruxkit/container@0.0.5", "", { "dependencies": { "@minejs/jsx": "^0.1.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-nHiDrDsAbQFJMvugo5d/4TPFOHzOkkPBXgLK9wDGVFolXm5n+MxOfxOVi/Ps3eDND/j5+iamLN9559Mfylbj0g=="],
 
@@ -52,7 +52,7 @@
 
     "@cruxkit/divider": ["@cruxkit/divider@0.0.3", "", { "dependencies": { "@minejs/jsx": "^0.1.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-Exk/0OLWielZMQ9rHkgU4036MrV1US33yjTGRJLz+59jvdqM0kSuj1m4agqNcSdhfabrRn8LLchrS9Pjk3SrtQ=="],
 
-    "@cruxkit/icon": ["@cruxkit/icon@0.0.5", "", { "dependencies": { "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-j4R4ERDYrKjddR8SzW4X77kXiQ+aFX7KQdugQyrezXZwKSV5fLtXwLKiY+i8ma2XO7FDZBT11pXjPmoo7zijaw=="],
+    "@cruxkit/icon": ["@cruxkit/icon@0.0.6", "", { "dependencies": { "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-FVPQZxmoXNafjc+LAWNqXZ4f7QAX5AvoG42rnaczkwDJhZpW0+HoKYKZ0oObVd0Yz74CyqEEwC8NY/YCZDlsKA=="],
 
     "@cruxkit/text": ["@cruxkit/text@0.0.2", "", { "dependencies": { "@minejs/jsx": "^0.1.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-TNwjTK2ZYZYovbglga4YWmOHe7Rr6v9L2D75VmWHV3tmaSattf/0nghZNlQr60eVY7HmDRBv7Y+BgpAHiiPnxw=="],
 
