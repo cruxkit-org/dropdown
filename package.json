@@ -40,7 +40,7 @@
 		"bun"                          : "^1.3.3"
 	},
 	"dependencies": {
-		"@cruxkit/button"              : "^0.1.1",
+		"@cruxkit/button"              : "^0.1.2",
 		"@cruxkit/container"           : "^0.0.5",
 		"@cruxkit/divider"             : "^0.0.3",
 		"@cruxkit/text"                : "^0.0.2",
