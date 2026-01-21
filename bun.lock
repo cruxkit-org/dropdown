@@ -4,7 +4,7 @@
     "": {
       "name": "@cruxkit/icon",
       "dependencies": {
-        "@cruxkit/button": "^0.1.1",
+        "@cruxkit/button": "^0.1.2",
         "@cruxkit/container": "^0.0.5",
         "@cruxkit/divider": "^0.0.3",
         "@cruxkit/icon": "^0.0.6",
