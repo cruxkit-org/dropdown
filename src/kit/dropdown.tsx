@@ -12,6 +12,7 @@
     import { Container, type ContainerProps }   from '@cruxkit/container';
     import { Button }                           from '@cruxkit/button';
     import { Text }                             from '@cruxkit/text';
+    import { Divider }                          from '@cruxkit/divider';
     import { Icon, type IconProps, type IconName, IconConfig } from '@cruxkit/icon';
     import type { DropdownProps, DropdownSize, DropdownPosition, DropdownDirection } from '../types';
 
@@ -58,6 +59,41 @@
 
     const MenuContainer = Container as (props: ContainerWithRefProps) => JSXElement;
 
+    const getArrowStyle = (dir: DropdownDirection) => {
+        const arrowSize = 6;
+        if (dir === 'up') {
+            return {
+                width: '0',
+                height: '0',
+                borderLeft: `${arrowSize}px solid transparent`,
+                borderRight: `${arrowSize}px solid transparent`,
+                borderBottom: `${arrowSize}px solid var(--border-1)`,
+                borderTop: '0',
+                top: ''
+            };
+        } else if (dir === 'side') {
+            return {
+                width: '0',
+                height: '0',
+                borderTop: `${arrowSize}px solid transparent`,
+                borderBottom: `${arrowSize}px solid transparent`,
+                borderInlineStart: `${arrowSize}px solid var(--border-1)`,
+                borderInlineEnd: '0',
+                top: ''
+            };
+        } else {
+            return {
+                width: '0',
+                height: '0',
+                borderLeft: `${arrowSize}px solid transparent`,
+                borderRight: `${arrowSize}px solid transparent`,
+                borderTop: `${arrowSize}px solid var(--border-1)`,
+                borderBottom: '0',
+                top: '-7px'
+            };
+        }
+    };
+
     /**
      * Dropdown component that renders a customizable dropdown menu.
      *
@@ -81,7 +117,7 @@
     export function Dropdown(props: DropdownProps): JSXElement {
         const size = props.size || 'md';
         const position = props.position || 'end';
-        const direction = props.direction || 'down';
+        const initialDirection = props.direction || 'down';
         const triggerMode = props.triggerMode || 'click';
         const triggerDisplay = props.triggerDisplay || 'label-icon';
         const hoverDelay = props.hoverDelay || 150;
@@ -93,49 +129,19 @@
         const parentId = props.parentId || null;
 
         const isOpen = signal(false);
+        const currentDirection = signal(initialDirection);
         let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
         let chevronElement: HTMLSpanElement | null = null;
         let dropdownContainer: HTMLDivElement | null = null;
         let dropdownMenu: HTMLDivElement | null = null;
+        let arrowPopup: HTMLDivElement | null = null;
 
         effect(() => {
             props.onOpenChange?.(isOpen());
         });
 
-        const arrowSize = 6;
-        let arrowStyle: Record<string, string> = {
-            width: '0',
-            height: '0'
-        };
-
-        if (direction === 'up') {
-            arrowStyle = {
-                width: '0',
-                height: '0',
-                borderLeft: `${arrowSize}px solid transparent`,
-                borderRight: `${arrowSize}px solid transparent`,
-                borderBottom: `${arrowSize}px solid var(--bg-surface)`,
-                borderTop: '0'
-            };
-        } else if (direction === 'side') {
-            arrowStyle = {
-                width: '0',
-                height: '0',
-                borderTop: `${arrowSize}px solid transparent`,
-                borderBottom: `${arrowSize}px solid transparent`,
-                borderInlineStart: `${arrowSize}px solid var(--bg-surface)`,
-                borderInlineEnd: '0'
-            };
-        } else {
-            arrowStyle = {
-                width: '0',
-                height: '0',
-                borderLeft: `${arrowSize}px solid transparent`,
-                borderRight: `${arrowSize}px solid transparent`,
-                borderTop: `${arrowSize}px solid var(--bg-surface)`,
-                borderBottom: '0'
-            };
-        }
+        // Initial Arrow Style (for SSR/first render if needed, though we update dynamically)
+        const arrowStyle = getArrowStyle(initialDirection);
 
         DropdownManager.register(
             dropdownId,
@@ -169,11 +175,67 @@
             };
         });
 
+        const updatePosition = () => {
+            if (!dropdownMenu || !dropdownContainer) return;
+
+            const triggerRect = dropdownContainer.getBoundingClientRect();
+            // Ensure menu is rendered for measurement
+            const wasHidden = dropdownMenu.classList.contains('hidden');
+            if (wasHidden) {
+                dropdownMenu.style.visibility = 'hidden';
+                dropdownMenu.classList.remove('hidden');
+                dropdownMenu.classList.add('flex');
+            }
+            
+            const menuRect = dropdownMenu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            if (wasHidden) {
+                dropdownMenu.classList.remove('flex');
+                dropdownMenu.classList.add('hidden');
+                dropdownMenu.style.visibility = '';
+            }
+
+            const checkSpace = (dir: DropdownDirection): boolean => {
+                // Buffer for aesthetics
+                const buffer = 10;
+                if (dir === 'down') {
+                    return triggerRect.bottom + menuRect.height + buffer <= viewportHeight;
+                } else if (dir === 'up') {
+                    return triggerRect.top - menuRect.height - buffer >= 0;
+                } else if (dir === 'side') {
+                    // Check right side primarily (as 'side' usually implies right/end)
+                    // If RTL is supported, this might need adjustment, but 'start-full' is usually right in LTR.
+                    // Assuming LTR for simplicity or 'side' maps to 'end'.
+                    // If 'side' maps to 'start', we need to check left.
+                    // The CSS for side is 'start-full', which means it goes to the END (Right in LTR).
+                    return triggerRect.right + menuRect.width + buffer <= viewportWidth;
+                }
+                return false;
+            };
+
+            let bestDirection = initialDirection;
+
+            // Priority: Requested -> Down -> Up -> Side
+            // Or Requested -> Flip -> Side
+            
+            if (!checkSpace(bestDirection)) {
+                if (checkSpace('down')) bestDirection = 'down';
+                else if (checkSpace('up')) bestDirection = 'up';
+                else if (checkSpace('side')) bestDirection = 'side';
+                // If none fit, we stick to 'down' or requested (could add logic to pick 'most' space)
+            }
+
+            currentDirection.set(bestDirection);
+        };
+
         const toggleDropdown = (e: Event) => {
             e.stopPropagation();
             const newState = !isOpen();
 
             if (newState) {
+                updatePosition(); // Calculate position before opening
                 DropdownManager.open(dropdownId);
                 isOpen.set(true);
             } else {
@@ -184,6 +246,7 @@
         const openDropdown = () => {
             if (hoverTimeout) clearTimeout(hoverTimeout);
             hoverTimeout = setTimeout(() => {
+                updatePosition(); // Calculate position before opening
                 DropdownManager.open(dropdownId);
                 isOpen.set(true);
             }, hoverDelay);
@@ -214,6 +277,37 @@
                     dropdownMenu.classList.remove('flex');
                     dropdownMenu.classList.add('hidden');
                 }
+            }
+        });
+
+        effect(() => {
+            const dir = currentDirection();
+            if (!dropdownMenu) return;
+
+            // Remove all direction classes
+            Object.values(directionMap).forEach(d => {
+                d.menu.split(' ').forEach(c => dropdownMenu!.classList.remove(c));
+            });
+
+            // Add new direction classes
+            directionMap[dir].menu.split(' ').forEach(c => dropdownMenu!.classList.add(c));
+
+            // Update arrow
+            if (arrowPopup && styleMode === 'arrow' && props.labelArrow) {
+                // Remove old arrow classes
+                Object.values(directionMap).forEach(d => {
+                    d.arrow.split(' ').forEach(c => arrowPopup!.classList.remove(c));
+                });
+                // Add new arrow classes
+                directionMap[dir].arrow.split(' ').forEach(c => arrowPopup!.classList.add(c));
+
+                // Update arrow style
+                const newStyle = getArrowStyle(dir);
+                Object.assign(arrowPopup.style, newStyle);
+                
+                // Clear potentially conflicting styles if they were set directly (though we use classes mostly)
+                if (dir !== 'down') arrowPopup.style.top = '';
+                if (dir === 'down') arrowPopup.style.top = '-7px';
             }
         });
 
@@ -354,7 +448,7 @@
                     className={`
                         dropdown-menu
                         absolute
-                        ${directionMap[direction].menu}
+                        ${directionMap[initialDirection].menu}
                         ${positionMap[position]}
                         hidden
                         bg-surface
@@ -363,64 +457,84 @@
                         py-1
                         ${styleMode === 'partof'
                             ? 'w-full min-w-fit rounded-none border-x border-b border-1 mt-0'
-                            : `w-full min-w-fit rounded-md border border-1 ${direction === 'down' ? 'mt-2' : ''} ${direction === 'up' ? 'mb-2' : ''}`}
+                            : `w-full min-w-fit rounded-md border border-1 ${initialDirection === 'down' ? 'mt-2' : ''} ${initialDirection === 'up' ? 'mb-2' : ''}`}
                     `}
                     ref={(el: HTMLDivElement | null) => {
                         dropdownMenu = el;
-                        if (el) {
-                            setTimeout(() => {
-                                if (isOpen()) {
-                                    el.classList.remove('hidden');
-                                    el.classList.add('flex');
-                                } else {
-                                    el.classList.remove('flex');
-                                    el.classList.add('hidden');
-                                }
-                            }, 0);
-                        }
                     }}
                     children={
                         <>
                             {styleMode === 'arrow' && props.labelArrow && (
                                 <div
+                                    ref={(el: HTMLDivElement | null) => {
+                                        arrowPopup = el;
+                                    }}
                                     className={`
                                         absolute
-                                        ${directionMap[direction].arrow}
+                                        ${directionMap[initialDirection].arrow}
                                     `}
                                     style={arrowStyle}
                                 />
                             )}
 
-                            {props.options.map((option, idx) =>
-                                option.divider ? (
-                                    <div
-                                        key={'divider-' + idx}
-                                        className="h-px bg-1 opacity-20 my-1"
-                                        role="separator"
-                                    />
-                                ) : (
-                                    <Button
-                                        variant="ghost"
-                                        color={color}
-                                        size={size}
-                                        fullWidth
-                                        className={`
-                                            dropdown-option
-                                            justify-start
-                                            text-base
-                                            text-1
-                                            whitespace-nowrap
-                                            ${option.disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
-                                        `}
-                                        onClick={() => handleSelect(option.value, option.disabled)}
-                                        disabled={option.disabled}
-                                        leftIcon={option.icon as IconProps | IconName | undefined}
-                                        type="button"
-                                    >
-                                        {option.label}
-                                    </Button>
-                                )
-                            )}
+                            {props.options.flatMap((option, idx) => {
+                                const elements = [];
+
+                                if (option.divider) {
+                                    elements.push(
+                                        <Divider
+                                            color="1"
+                                            opacity={50}
+                                            max={100}
+                                            thickness='super-thin'
+                                            className="my-1"
+                                        />
+                                    );
+                                } else {
+                                    elements.push(
+                                        <Button
+                                            variant="ghost"
+                                            color={color}
+                                            size={size}
+                                            fullWidth
+                                            className={`
+                                                dropdown-option
+                                                justify-start
+                                                text-base
+                                                text-1
+                                                whitespace-nowrap
+                                                ${option.disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
+                                            `}
+                                            onClick={() => handleSelect(option.value, option.disabled)}
+                                            disabled={option.disabled}
+                                            leftIcon={option.icon as IconProps | IconName | undefined}
+                                            type="button"
+                                        >
+                                            {option.label}
+                                        </Button>
+                                    );
+                                }
+
+                                const next = props.options[idx + 1];
+                                if (
+                                    props.autoDivider &&
+                                    idx < props.options.length - 1 &&
+                                    !option.divider &&
+                                    (!next || !next.divider)
+                                ) {
+                                    elements.push(
+                                        <Divider
+                                            color="1"
+                                            opacity={50}
+                                            max={100}
+                                            thickness='super-thin'
+                                            className="my-1"
+                                        />
+                                    );
+                                }
+
+                                return elements;
+                            })}
                         </>
                     }
                 />

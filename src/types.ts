@@ -43,6 +43,7 @@
         color?                          : 'brand' | 'success' | 'warning' | 'error' | 'neutral';
 
         labelArrow?                     : boolean;
+        autoDivider?                    : boolean;
         styleMode?                      : DropdownStyleMode;
         hoverDelay?                     : number;
 

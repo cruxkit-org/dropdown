@@ -8,10 +8,10 @@
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/badge/v-0.0.2-black"/>
+    <img src="https://img.shields.io/badge/v-0.0.3-black"/>
     <a href="https://github.com/cruxkit-org"><img src="https://img.shields.io/badge/🔥-@cruxkit-black"/></a>
     <br>
-    <img src="https://img.shields.io/badge/coverage-97.08%25-brightgreen" alt="Test Coverage" />
+    <img src="https://img.shields.io/badge/coverage-97.28%25-brightgreen" alt="Test Coverage" />
     <img src="https://img.shields.io/github/issues/cruxkit-org/dropdown?style=flat" alt="Github Repo Issues" />
     <img src="https://img.shields.io/github/stars/cruxkit-org/dropdown?style=social" alt="GitHub Repo stars" />
 </div>
@@ -156,6 +156,7 @@
                 color?                          : 'brand' | 'success' | 'warning' | 'error' | 'neutral';
 
                 labelArrow?                     : boolean;
+                autoDivider?                    : boolean;
                 styleMode?                      : DropdownStyleMode;
                 hoverDelay?                     : number;
 

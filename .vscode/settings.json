@@ -11,7 +11,6 @@
         ".gitignore": true,
         ".gitattributes": true,
         ".npmignore": true,
-        "node_modules": true,
         ".vscode": true
     },
     "hide-files.files": [

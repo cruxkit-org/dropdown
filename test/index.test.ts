@@ -237,6 +237,64 @@
             side.mounted.unmount();
             side.container.remove();
         });
+
+        test('autoDivider adds dividers between items', () => {
+            const { root, mounted, container } = renderDropdown({
+                autoDivider: true,
+                options: [
+                    { label: 'One', value: 'one' },
+                    { label: 'Two', value: 'two' },
+                    { label: 'Three', value: 'three' }
+                ]
+            });
+
+            clickTrigger(root);
+
+            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
+            expect(menu).not.toBeNull();
+
+            // Divider component presumably renders with role="separator"
+            // If Divider component implementation is unknown, we might need to be flexible.
+            // But based on manual divider having role="separator", and Divider d.ts having role default, it's likely.
+            // Note: The manual divider in my code also has role="separator".
+            // Since I replaced the map with flatMap, the manual divider is still there (if any).
+            // In this test case, no manual dividers.
+            
+            // However, JSDOM might not fully render external components if they use complex logic, 
+            // but here Divider is likely a simple functional component.
+            // If Divider is not mocked, it should render.
+            // But wait, in 'bun:test', imports from node_modules work.
+
+            const dividers = menu!.querySelectorAll('[role="separator"]');
+            expect(dividers.length).toBe(2);
+
+            mounted.unmount();
+            container.remove();
+        });
+
+        test('autoDivider respects manual dividers', () => {
+             const { root, mounted, container } = renderDropdown({
+                autoDivider: true,
+                options: [
+                    { label: 'One', value: 'one' },
+                    { label: 'Divider', value: 'div', divider: true },
+                    { label: 'Two', value: 'two' }
+                ]
+            });
+
+            clickTrigger(root);
+            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
+            
+            // Should have only 1 divider (the manual one)
+            // Item 1 -> next is divider -> no auto
+            // Divider -> is divider -> no auto
+            // Item 2 -> last -> no auto
+            const dividers = menu!.querySelectorAll('[role="separator"]');
+            expect(dividers.length).toBe(1);
+
+            mounted.unmount();
+            container.remove();
+        });
     });
 
     describe('@cruxkit/dropdown – manager', () => {
