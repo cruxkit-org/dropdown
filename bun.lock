@@ -4,7 +4,7 @@
     "": {
       "name": "@cruxkit/icon",
       "dependencies": {
-        "@cruxkit/button": "^0.0.9",
+        "@cruxkit/button": "^0.1.0",
         "@cruxkit/container": "^0.0.5",
         "@cruxkit/divider": "^0.0.3",
         "@cruxkit/icon": "^0.0.6",
@@ -42,9 +42,9 @@
 
     "@cruxjs/base": ["@cruxjs/base@0.1.8", "", { "dependencies": { "@minejs/logger": "^0.0.2" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-qzbJYTRC6uMeDew5X5ViEZag7AJZBE3Ts1lesWcBUc+UrjMkNZoWRJ5/2HXMBSPJ8s67SocdqjpGK6cWtadhZA=="],
 
-    "@cruxjs/client": ["@cruxjs/client@0.2.3", "", { "dependencies": { "@cruxjs/base": "^0.1.8", "@cruxkit/core": "^0.0.2", "@minejs/browser": "^0.0.4", "@minejs/i18n": "^0.1.5", "@minejs/jsx": "^0.1.4", "@minejs/signals": "^0.0.6", "@minejs/store": "^0.0.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-rmiFDBnXtVDz9SO/x7fLIYQzUPXUuPW4gVRzdJiVYTsIiaSh6Id8eOcoGtk3lA/G7mU67NMh5Bx0ZCTtJTOSyA=="],
+    "@cruxjs/client": ["@cruxjs/client@0.2.4", "", { "dependencies": { "@cruxjs/base": "^0.1.8", "@cruxkit/core": "^0.0.2", "@minejs/browser": "^0.0.4", "@minejs/i18n": "^0.1.6", "@minejs/jsx": "^0.1.4", "@minejs/signals": "^0.0.6", "@minejs/store": "^0.0.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-McagRDAIBSQoI9Mte09RXq3Jpr1pOugaUn9VwAbqmGpbSa3BPuGPwvYlGbGkulrl0VjWbELmBONMgyRLSFSFNA=="],
 
-    "@cruxkit/button": ["@cruxkit/button@0.0.9", "", { "dependencies": { "@cruxjs/client": "^0.2.3", "@cruxkit/container": "^0.0.2", "@cruxkit/icon": "^0.0.6", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-v5IdJQe4Lx42wK5tzraMxf5B3pEOlJdsvM70fIYiz+uJcaKATcr/JpNlbJYUIbb27GSBTIG+sUojlIfY58rCBw=="],
+    "@cruxkit/button": ["@cruxkit/button@0.1.0", "", { "dependencies": { "@cruxjs/client": "^0.2.4", "@cruxkit/container": "^0.0.2", "@cruxkit/icon": "^0.0.6", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.4" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-g7wYwufFr8ORp1FtcXHXH/w+Ftf6iG72RhS0yZ6gmLAjuPc7Y72FWT6VezxjoRxCXKDPs55jmalY/LhjXakAhA=="],
 
     "@cruxkit/container": ["@cruxkit/container@0.0.5", "", { "dependencies": { "@minejs/jsx": "^0.1.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-nHiDrDsAbQFJMvugo5d/4TPFOHzOkkPBXgLK9wDGVFolXm5n+MxOfxOVi/Ps3eDND/j5+iamLN9559Mfylbj0g=="],
 
@@ -160,7 +160,7 @@
 
     "@minejs/browser": ["@minejs/browser@0.0.4", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-1/QmEjw1+5Y3zyOXIO2hicCRqJUJSaIrdqrfe8ibnviFmX9+GICN0dc7hmGDxQNoWzcDNENOCgAxQq6iLi3uzA=="],
 
-    "@minejs/i18n": ["@minejs/i18n@0.1.5", "", { "peerDependencies": { "bun": "^1.3.3" } }, "sha512-lQJGrgwJHwxmwQLZ5ZSkQpX7bcroBKYwUtGVufHlyX8KHTmlgqTodUZ1zR2Ll2cf5wSCeP8f9HB/UtaFIjUPmA=="],
+    "@minejs/i18n": ["@minejs/i18n@0.1.6", "", { "peerDependencies": { "bun": "^1.3.3" } }, "sha512-LI7Y4SRB8YRxkm7U8/ISE8p0RP3jBepj7HM7gRTpbSgXrpshtyxXZ/NP3PAMg27NjmSIgt/1GSZRYigV59Pulw=="],
 
     "@minejs/jsx": ["@minejs/jsx@0.1.4", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-Zsx9f3eduaMEBJVDB7FDRHI9sGd7GYCwjwYoH97cXZNUympcrnWXqRdMaIqNHwNaFq1b7bxmvowTG+etncEYoQ=="],
 
