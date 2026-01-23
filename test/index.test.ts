@@ -304,6 +304,21 @@
             mounted.unmount();
             container.remove();
         });
+
+        test('applies buttonClassName to the trigger button', () => {
+            const { root, mounted, container } = renderDropdown({
+                buttonClassName: 'custom-btn-class',
+                className: 'base-class'
+            });
+
+            const button = root.querySelector('button') as HTMLElement | null;
+            expect(button).not.toBeNull();
+            expect(button!.className).toContain('custom-btn-class');
+            expect(button!.className).toContain('base-class');
+
+            mounted.unmount();
+            container.remove();
+        });
     });
 
     describe('@cruxkit/dropdown – manager', () => {

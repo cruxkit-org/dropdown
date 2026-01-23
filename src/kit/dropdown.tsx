@@ -13,7 +13,7 @@
     import { Button }                           from '@cruxkit/button';
     import { Text }                             from '@cruxkit/text';
     import { Divider }                          from '@cruxkit/divider';
-    import { Icon, type IconProps, type IconName, IconConfig } from '@cruxkit/icon';
+    import { Icon, type IconProps, type IconName } from '@cruxkit/icon';
     import type { DropdownProps, DropdownSize, DropdownPosition, DropdownDirection } from '../types';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
@@ -338,7 +338,7 @@
                         ref={(el: HTMLSpanElement | null) => {
                             chevronElement = el;
                         }}
-                        className="transition-transform duration-200 flex items-center w-full justify-between"
+                        className="transition-transform duration-200 flex items-center"
                     >
                         <Icon name={'angle-down' as IconName} size="xxs" />
                     </span>
@@ -357,14 +357,14 @@
             switch (triggerDisplay) {
                 case 'icon-only':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={1}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {iconElement || renderChevron()}
                         </Container>
                     );
 
                 case 'label-only':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {label}
                             {renderChevron()}
                         </Container>
@@ -372,20 +372,20 @@
 
                 case 'icon-label':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {label}
                             {iconElement}
-                            {/* {renderChevron()} */}
+                            {renderChevron()}
                         </Container>
                     );
 
                 case 'label-icon':
                 default:
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {iconElement}
                             {label}
-                            {/* {renderChevron()} */}
+                            {renderChevron()}
                         </Container>
                     );
             }
@@ -435,7 +435,7 @@
                     variant={variant}
                     color={color}
                     size={size}
-                    className={props.className + ' w-full'}
+                    className={`${props.className || ''} ${props.buttonClassName || ''} w-full`}
                     {...triggerHandlers}
                     fullWidth
                     labelFullWidth
@@ -444,7 +444,7 @@
                         as="span" w={'full'} justify='between' 
                         display="inline-flex"
                         align="center"
-                        gap={sizeConf.text === 'sm' ? 1 : 2}
+                        gap={props.gap ?? 2}
                     >
                         {typeof props.trigger === 'string'
                             ? renderTriggerContent()

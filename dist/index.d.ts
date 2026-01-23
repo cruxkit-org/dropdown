@@ -1,5 +1,6 @@
 import { JSXElement } from '@minejs/jsx';
 import { IconProps, IconName } from '@cruxkit/icon';
+import { ContainerGap } from '@cruxkit/container';
 
 type DropdownSize = 'sm' | 'md' | 'lg';
 type DropdownPosition = 'start' | 'center' | 'end';
@@ -17,6 +18,8 @@ interface DropdownOption {
 interface DropdownProps {
     id?: string;
     className?: string;
+    buttonClassName?: string;
+    gap?: ContainerGap;
     parentId?: string | null;
     options: DropdownOption[];
     variant?: 'solid' | 'outline' | 'ghost' | 'link';

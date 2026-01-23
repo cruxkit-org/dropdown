@@ -8,6 +8,7 @@
 
     import type { JSXElement }          from '@minejs/jsx';
     import type { IconProps, IconName } from '@cruxkit/icon';
+import { ContainerGap } from '@cruxkit/container';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -33,6 +34,8 @@
     export interface DropdownProps {
         id?                             : string;
         className?                      : string;
+        buttonClassName?                : string;
+        gap?                            : ContainerGap;
         parentId?                       : string | null;
 
         options                         : DropdownOption[];
