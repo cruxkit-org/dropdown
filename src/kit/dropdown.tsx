@@ -338,7 +338,7 @@
                         ref={(el: HTMLSpanElement | null) => {
                             chevronElement = el;
                         }}
-                        className="transition-transform duration-200 flex items-center"
+                        className="transition-transform duration-200 flex items-center w-full justify-between"
                     >
                         <Icon name={'angle-down' as IconName} size="xxs" />
                     </span>
@@ -348,7 +348,7 @@
             const label =
                 typeof props.trigger === 'string'
                     ? (
-                        <Text as="span" size={sizeMap[size].text}>
+                        <Text as="span" className='w-full justify-between' size={sizeMap[size].text}>
                             {props.trigger}
                         </Text>
                     )
@@ -357,14 +357,14 @@
             switch (triggerDisplay) {
                 case 'icon-only':
                     return (
-                        <Container as="span" display="inline-flex" align="center" gap={1}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={1}>
                             {iconElement || renderChevron()}
                         </Container>
                     );
 
                 case 'label-only':
                     return (
-                        <Container as="span" display="inline-flex" align="center" gap={2}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
                             {label}
                             {renderChevron()}
                         </Container>
@@ -373,7 +373,7 @@
                 case 'label-icon':
                 default:
                     return (
-                        <Container as="span" display="inline-flex" align="center" gap={2}>
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
                             {iconElement}
                             {label}
                             {renderChevron()}
@@ -430,7 +430,7 @@
                     {...triggerHandlers}
                 >
                     <Container
-                        as="span"
+                        as="span" w={'full'} justify='between' 
                         display="inline-flex"
                         align="center"
                         gap={sizeConf.text === 'sm' ? 1 : 2}
