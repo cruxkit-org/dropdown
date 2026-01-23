@@ -1,6 +1,6 @@
 {
 	"name"                             : "@cruxkit/dropdown",
-	"version"                          : "0.1.2",
+	"version"                          : "0.1.3",
 	"description"                      : "Composable dropdown primitive for the CruxKit ecosystem, built on @minejs/jsx.",
 	"keywords"                         : ["crux", "kit", "dropdown"],
 	"license"                          : "MIT",

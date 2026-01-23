@@ -340,7 +340,7 @@
                         }}
                         className="transition-transform duration-200 flex items-center"
                     >
-                        <Icon name={'chevron-down' as IconName} size="xs" />
+                        <Icon name={'caret-down' as IconName} size="xs" />
                     </span>
                 );
             };
