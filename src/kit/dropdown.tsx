@@ -340,7 +340,7 @@
                         }}
                         className="transition-transform duration-200 flex items-center"
                     >
-                        <Icon name={'angle-down' as IconName} size="xs" />
+                        <Icon name={'angle-down' as IconName} size="xxs" />
                     </span>
                 );
             };
