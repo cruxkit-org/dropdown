@@ -4,7 +4,7 @@
     "": {
       "name": "@cruxkit/icon",
       "dependencies": {
-        "@cruxkit/button": "^0.1.8",
+        "@cruxkit/button": "^0.1.9",
         "@cruxkit/container": "^0.0.5",
         "@cruxkit/divider": "^0.0.4",
         "@cruxkit/icon": "^0.0.9",
@@ -40,7 +40,7 @@
 
     "@asamuzakjp/nwsapi": ["@asamuzakjp/nwsapi@2.3.9", "", {}, "sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q=="],
 
-    "@cruxkit/button": ["@cruxkit/button@0.1.8", "", { "dependencies": { "@cruxkit/container": "^0.0.5", "@cruxkit/icon": "^0.0.9", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.5" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-TEZXEK4FcCLoIZYJ/b1rHNATdgb2TbZ+0Q8TGPgok/94Jqqzsgl3YhitSmjhoZYLh/jLUK1nbcWxZRbifd5KhA=="],
+    "@cruxkit/button": ["@cruxkit/button@0.1.9", "", { "dependencies": { "@cruxkit/container": "^0.0.5", "@cruxkit/icon": "^0.0.9", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.5" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-AMQIYWiDSELRuVa7hyUeF4rxNzOiAqSivfch13t4ZLplbDhxzvJ63kZRLtkSmkERaelypFKE7qVCeZJtD90WSA=="],
 
     "@cruxkit/container": ["@cruxkit/container@0.0.5", "", { "dependencies": { "@minejs/jsx": "^0.1.3" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-nHiDrDsAbQFJMvugo5d/4TPFOHzOkkPBXgLK9wDGVFolXm5n+MxOfxOVi/Ps3eDND/j5+iamLN9559Mfylbj0g=="],
 

@@ -375,7 +375,7 @@
                         <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
                             {label}
                             {iconElement}
-                            {renderChevron()}
+                            {/* {renderChevron()} */}
                         </Container>
                     );
 
@@ -385,7 +385,7 @@
                         <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
                             {iconElement}
                             {label}
-                            {renderChevron()}
+                            {/* {renderChevron()} */}
                         </Container>
                     );
             }
@@ -437,6 +437,8 @@
                     size={size}
                     className={props.className + ' w-full'}
                     {...triggerHandlers}
+                    fullWidth
+                    labelFullWidth
                 >
                     <Container
                         as="span" w={'full'} justify='between' 
