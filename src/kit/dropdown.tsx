@@ -338,7 +338,7 @@
                         ref={(el: HTMLSpanElement | null) => {
                             chevronElement = el;
                         }}
-                        className="transition-transform duration-200"
+                        className="transition-transform duration-200 flex items-center"
                     >
                         <Icon name={'chevron-down' as IconName} size="xs" />
                     </span>
