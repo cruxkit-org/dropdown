@@ -435,7 +435,7 @@
                     variant={variant}
                     color={color}
                     size={size}
-                    className={props.className}
+                    className={props.className + ' w-full'}
                     {...triggerHandlers}
                 >
                     <Container
