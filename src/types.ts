@@ -19,7 +19,7 @@
     export type DropdownPosition        = 'start' | 'center' | 'end';
     export type DropdownDirection       = 'down' | 'up' | 'side';
     export type DropdownTriggerMode     = 'click' | 'hover' | 'both';
-    export type DropdownTriggerDisplay  = 'label-only' | 'label-icon' | 'icon-only';
+    export type DropdownTriggerDisplay  = 'label-only' | 'label-icon' | 'icon-only' | 'icon-label';
     export type DropdownStyleMode       = 'classic' | 'arrow' | 'partof';
 
     export interface DropdownOption {

@@ -190,9 +190,16 @@
                 triggerIcon   : 'chevron-down'
             });
 
+            const iconLabel = renderDropdown({
+                triggerDisplay: 'icon-label',
+                trigger       : 'Icon after label',
+                triggerIcon   : 'chevron-down'
+            });
+
             expect(iconOnly.root.textContent).toContain('One');
             expect(labelOnly.root.textContent).toContain('Label only');
             expect(labelIcon.root.textContent).toContain('Label with icon');
+            expect(iconLabel.root.textContent).toContain('Icon after label');
 
             iconOnly.mounted.unmount();
             iconOnly.container.remove();
@@ -200,6 +207,8 @@
             labelOnly.container.remove();
             labelIcon.mounted.unmount();
             labelIcon.container.remove();
+            iconLabel.mounted.unmount();
+            iconLabel.container.remove();
         });
 
         test('supports different directions', () => {

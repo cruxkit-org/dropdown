@@ -5,7 +5,7 @@ type DropdownSize = 'sm' | 'md' | 'lg';
 type DropdownPosition = 'start' | 'center' | 'end';
 type DropdownDirection = 'down' | 'up' | 'side';
 type DropdownTriggerMode = 'click' | 'hover' | 'both';
-type DropdownTriggerDisplay = 'label-only' | 'label-icon' | 'icon-only';
+type DropdownTriggerDisplay = 'label-only' | 'label-icon' | 'icon-only' | 'icon-label';
 type DropdownStyleMode = 'classic' | 'arrow' | 'partof';
 interface DropdownOption {
     label: string;

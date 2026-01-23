@@ -370,6 +370,15 @@
                         </Container>
                     );
 
+                case 'icon-label':
+                    return (
+                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={2}>
+                            {label}
+                            {iconElement}
+                            {renderChevron()}
+                        </Container>
+                    );
+
                 case 'label-icon':
                 default:
                     return (
