@@ -489,7 +489,7 @@
 
                                 if (option.divider) {
                                     elements.push(
-                                        <Divider spacing={1} />
+                                        <Divider max={100} thickness='super-thin' spacing={1} />
                                     );
                                 } else {
                                     elements.push(
@@ -524,9 +524,7 @@
                                     (!next || !next.divider)
                                 ) {
                                     elements.push(
-                                        <Divider
-                                            className="my-1"
-                                        />
+                                        <Divider className="my-1" max={100} thickness='super-thin' spacing={1} />
                                     );
                                 }
 
