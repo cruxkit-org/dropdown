@@ -143,7 +143,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
 
-    "@minejs/jsx": ["@minejs/jsx@0.2.8", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-G996tdDdtTXHorhAE4gHfO/EXd9kW/84jvX6jdVEGiRwGdXVQdqvdW7dUY++xIYPskw9FVzeOuHGKdQ/J+zmdw=="],
+    "@minejs/jsx": ["@minejs/jsx@0.2.9", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-BmeCONV0yj14azjWP/U3NGbgUFTP3RMiPLGgIuojZZbdZrdNvT4L9dawbslEMynlkaQXMe6U8q04EyhYzdoG7w=="],
 
     "@minejs/signals": ["@minejs/signals@0.0.6", "", { "peerDependencies": { "bun": ">=1.3.3" } }, "sha512-Dc8aOxn6l5VocDFfpqRtda55rExtl8JKRMD/jlQweJLrK2jBcf5Kf3y+OaV18QAYA9ngnM03aFNgm1xfeqfeAg=="],
 
@@ -596,6 +596,10 @@
     "yn": ["yn@3.1.1", "", {}, "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q=="],
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
+
+    "@cruxkit/button/@minejs/jsx": ["@minejs/jsx@0.2.8", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-G996tdDdtTXHorhAE4gHfO/EXd9kW/84jvX6jdVEGiRwGdXVQdqvdW7dUY++xIYPskw9FVzeOuHGKdQ/J+zmdw=="],
+
+    "@cruxkit/icon/@minejs/jsx": ["@minejs/jsx@0.2.8", "", { "dependencies": { "@minejs/signals": "^0.0.6" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-G996tdDdtTXHorhAE4gHfO/EXd9kW/84jvX6jdVEGiRwGdXVQdqvdW7dUY++xIYPskw9FVzeOuHGKdQ/J+zmdw=="],
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 

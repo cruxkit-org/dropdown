@@ -373,8 +373,8 @@
                 case 'icon-label':
                     return (
                         <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
-                            {label}
                             {iconElement}
+                            {label}
                             {renderChevron()}
                         </div>
                     );
