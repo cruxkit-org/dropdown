@@ -4,7 +4,7 @@
     "": {
       "name": "@cruxkit/icon",
       "dependencies": {
-        "@cruxkit/button": "^0.2.4",
+        "@cruxkit/button": "^0.2.5",
         "@cruxkit/container": "^0.1.0",
         "@cruxkit/divider": "^0.0.7",
         "@cruxkit/icon": "^0.1.1",
@@ -13,7 +13,7 @@
       },
       "devDependencies": {
         "@eslint/js": "^9.39.2",
-        "@stylistic/eslint-plugin": "^5.7.0",
+        "@stylistic/eslint-plugin": "^5.7.1",
         "@types/bun": "^1.3.6",
         "@types/jsdom": "^27.0.0",
         "@types/node": "^20.19.30",
@@ -40,7 +40,7 @@
 
     "@asamuzakjp/nwsapi": ["@asamuzakjp/nwsapi@2.3.9", "", {}, "sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q=="],
 
-    "@cruxkit/button": ["@cruxkit/button@0.2.4", "", { "dependencies": { "@cruxkit/container": "^0.1.0", "@cruxkit/icon": "^0.1.1", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.8" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-x+iJOhBP2UH7oshpzIwsBm48QKRozvdueVS8cU2EwM4kOOxFktVTnpDWwQKpyc5UKpZeS5zEQ6KAYyrjLWhdzQ=="],
+    "@cruxkit/button": ["@cruxkit/button@0.2.5", "", { "dependencies": { "@cruxkit/container": "^0.1.0", "@cruxkit/icon": "^0.1.1", "@cruxkit/text": "^0.0.2", "@minejs/jsx": "^0.1.8" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-bzHwf94opdU9Wo+75ZJUV58cgEY7UdH+2OrtliNEaWYyGa9MB40vDtHrc4Pm2iticV6avJ+B3qzvKAGFzH50ZQ=="],
 
     "@cruxkit/container": ["@cruxkit/container@0.1.0", "", { "dependencies": { "@minejs/jsx": "^0.1.8" }, "peerDependencies": { "bun": "^1.3.3" } }, "sha512-F6W4c4oR1QubQNtg2Wz/Hykp7Zu9CBqL3skJtfaNQ2esIl7PrcjzAlvBfPmx97qYygSWhb8rjTZQd8tQwH35gg=="],
 
