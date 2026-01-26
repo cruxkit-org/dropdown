@@ -8,14 +8,14 @@
 
     import type { JSXElement }          from '@minejs/jsx';
     import type { IconProps, IconName } from '@cruxkit/icon';
-import { ContainerGap } from '@cruxkit/container';
+    import { ContainerGap }             from '@cruxkit/container';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
 
 
 // ╔════════════════════════════════════════ TYPE ════════════════════════════════════════╗
-    
+
     export type DropdownSize            = 'sm' | 'md' | 'lg';
     export type DropdownPosition        = 'start' | 'center' | 'end';
     export type DropdownDirection       = 'down' | 'up' | 'side';
@@ -54,7 +54,7 @@ import { ContainerGap } from '@cruxkit/container';
         triggerIcon?                    : IconProps | IconName;
         triggerDisplay?                 : DropdownTriggerDisplay;
         triggerMode?                    : DropdownTriggerMode;
-        
+
         onSelect?                       : (value: string | number) => void;
         onOpenChange?                   : (open: boolean) => void;
     }

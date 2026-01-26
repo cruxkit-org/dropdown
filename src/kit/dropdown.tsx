@@ -6,15 +6,17 @@
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import type { JSXElement }                  from '@minejs/jsx';
-    import { signal, effect }                   from '@minejs/signals';
+    import type { JSXProps, JSXElement }        from '@minejs/jsx';
+    import { signal, effect, type Signal }      from '@minejs/signals';
     import { DropdownManager }                  from './manager';
-    import { Container, type ContainerProps }   from '@cruxkit/container';
     import { Button }                           from '@cruxkit/button';
-    import { Text }                             from '@cruxkit/text';
-    import { Divider }                          from '@cruxkit/divider';
     import { Icon, type IconProps, type IconName } from '@cruxkit/icon';
     import type { DropdownProps, DropdownSize, DropdownPosition, DropdownDirection } from '../types';
+
+    // Local Components
+    const Divider = ({ className }: { className?: string }) => (
+        <div className={`w-full border-b border-border-1 opacity-50 ${className || ''}`} />
+    );
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -55,9 +57,7 @@
 
 // ╔════════════════════════════════════════ CORE ════════════════════════════════════════╗
 
-    type ContainerWithRefProps = ContainerProps & { ref?: (el: HTMLDivElement | null) => void };
-
-    const MenuContainer = Container as (props: ContainerWithRefProps) => JSXElement;
+    const MenuContainer = 'div' as unknown as (props: JSXProps) => JSXElement;
 
     const getArrowStyle = (dir: DropdownDirection) => {
         const arrowSize = 6;
@@ -131,10 +131,10 @@
         const isOpen = signal(false);
         const currentDirection = signal(initialDirection);
         let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
-        let chevronElement: HTMLSpanElement | null = null;
-        let dropdownContainer: HTMLDivElement | null = null;
-        let dropdownMenu: HTMLDivElement | null = null;
-        let arrowPopup: HTMLDivElement | null = null;
+        const chevronElement = signal<HTMLSpanElement | null>(null);
+        const dropdownContainer = signal<HTMLDivElement | null>(null);
+        const dropdownMenu = signal<HTMLDivElement | null>(null);
+        const arrowPopup = signal<HTMLDivElement | null>(null);
 
         effect(() => {
             props.onOpenChange?.(isOpen());
@@ -163,7 +163,8 @@
             if (!isCurrentlyOpen) return;
 
             const handleClickOutside = (e: MouseEvent) => {
-                if (dropdownContainer && !dropdownContainer.contains(e.target as Node)) {
+                const container = dropdownContainer();
+                if (container && !container.contains(e.target as Node)) {
                     DropdownManager.close(dropdownId);
                 }
             };
@@ -176,25 +177,27 @@
         });
 
         const updatePosition = () => {
-            if (!dropdownMenu || !dropdownContainer) return;
+            const menuEl = dropdownMenu();
+            const containerEl = dropdownContainer();
+            if (!menuEl || !containerEl) return;
 
-            const triggerRect = dropdownContainer.getBoundingClientRect();
+            const triggerRect = containerEl.getBoundingClientRect();
             // Ensure menu is rendered for measurement
-            const wasHidden = dropdownMenu.classList.contains('hidden');
+            const wasHidden = menuEl.classList.contains('hidden');
             if (wasHidden) {
-                dropdownMenu.style.visibility = 'hidden';
-                dropdownMenu.classList.remove('hidden');
-                dropdownMenu.classList.add('flex');
+                menuEl.style.visibility = 'hidden';
+                menuEl.classList.remove('hidden');
+                menuEl.classList.add('flex');
             }
-            
-            const menuRect = dropdownMenu.getBoundingClientRect();
+
+            const menuRect = menuEl.getBoundingClientRect();
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
             if (wasHidden) {
-                dropdownMenu.classList.remove('flex');
-                dropdownMenu.classList.add('hidden');
-                dropdownMenu.style.visibility = '';
+                menuEl.classList.remove('flex');
+                menuEl.classList.add('hidden');
+                menuEl.style.visibility = '';
             }
 
             const checkSpace = (dir: DropdownDirection): boolean => {
@@ -219,7 +222,7 @@
 
             // Priority: Requested -> Down -> Up -> Side
             // Or Requested -> Flip -> Side
-            
+
             if (!checkSpace(bestDirection)) {
                 if (checkSpace('down')) bestDirection = 'down';
                 else if (checkSpace('up')) bestDirection = 'up';
@@ -268,58 +271,62 @@
 
         effect(() => {
             const isCurrentlyOpen = isOpen();
+            const menuEl = dropdownMenu();
 
-            if (dropdownMenu) {
+            if (menuEl) {
                 if (isCurrentlyOpen) {
-                    dropdownMenu.classList.remove('hidden');
-                    dropdownMenu.classList.add('flex');
+                    menuEl.classList.remove('hidden');
+                    menuEl.classList.add('flex');
                 } else {
-                    dropdownMenu.classList.remove('flex');
-                    dropdownMenu.classList.add('hidden');
+                    menuEl.classList.remove('flex');
+                    menuEl.classList.add('hidden');
                 }
             }
         });
 
         effect(() => {
             const dir = currentDirection();
-            if (!dropdownMenu) return;
+            const menuEl = dropdownMenu();
+            if (!menuEl) return;
 
             // Remove all direction classes
             Object.values(directionMap).forEach(d => {
-                d.menu.split(' ').forEach(c => dropdownMenu!.classList.remove(c));
+                d.menu.split(' ').forEach(c => menuEl.classList.remove(c));
             });
 
             // Add new direction classes
-            directionMap[dir].menu.split(' ').forEach(c => dropdownMenu!.classList.add(c));
+            directionMap[dir].menu.split(' ').forEach(c => menuEl.classList.add(c));
 
             // Update arrow
-            if (arrowPopup && styleMode === 'arrow' && props.labelArrow) {
+            const arrowEl = arrowPopup();
+            if (arrowEl && styleMode === 'arrow' && props.labelArrow) {
                 // Remove old arrow classes
                 Object.values(directionMap).forEach(d => {
-                    d.arrow.split(' ').forEach(c => arrowPopup!.classList.remove(c));
+                    d.arrow.split(' ').forEach(c => arrowEl.classList.remove(c));
                 });
                 // Add new arrow classes
-                directionMap[dir].arrow.split(' ').forEach(c => arrowPopup!.classList.add(c));
+                directionMap[dir].arrow.split(' ').forEach(c => arrowEl.classList.add(c));
 
                 // Update arrow style
                 const newStyle = getArrowStyle(dir);
-                Object.assign(arrowPopup.style, newStyle);
-                
+                Object.assign(arrowEl.style, newStyle);
+
                 // Clear potentially conflicting styles if they were set directly (though we use classes mostly)
-                if (dir !== 'down') arrowPopup.style.top = '';
-                if (dir === 'down') arrowPopup.style.top = '-7px';
+                if (dir !== 'down') arrowEl.style.top = '';
+                if (dir === 'down') arrowEl.style.top = '-7px';
             }
         });
 
         effect(() => {
             const isCurrentlyOpen = isOpen();
+            const chevronEl = chevronElement();
 
-            if (!chevronElement) return;
+            if (!chevronEl) return;
 
             if (isCurrentlyOpen) {
-                chevronElement.classList.add('rotate-180');
+                chevronEl.classList.add('rotate-180');
             } else {
-                chevronElement.classList.remove('rotate-180');
+                chevronEl.classList.remove('rotate-180');
             }
         });
 
@@ -335,9 +342,7 @@
 
                 return (
                     <span
-                        ref={(el: HTMLSpanElement | null) => {
-                            chevronElement = el;
-                        }}
+                        ref={chevronElement}
                         className="transition-transform duration-200 flex items-center"
                     >
                         <Icon name={'angle-down' as IconName} size="xxs" />
@@ -348,45 +353,45 @@
             const label =
                 typeof props.trigger === 'string'
                     ? (
-                        <Text as="span" className='w-full justify-between' size={sizeMap[size].text}>
+                        <div as="span" w="full" justify="between" display="inline-flex" textSize={sizeMap[size].text}>
                             {props.trigger}
-                        </Text>
+                        </div>
                     )
                     : props.trigger;
 
             switch (triggerDisplay) {
                 case 'icon-only':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
+                        <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {iconElement || renderChevron()}
-                        </Container>
+                        </div>
                     );
 
                 case 'label-only':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
+                        <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {label}
                             {renderChevron()}
-                        </Container>
+                        </div>
                     );
 
                 case 'icon-label':
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
+                        <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {label}
                             {iconElement}
                             {renderChevron()}
-                        </Container>
+                        </div>
                     );
 
                 case 'label-icon':
                 default:
                     return (
-                        <Container as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
+                        <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
                             {iconElement}
                             {label}
                             {renderChevron()}
-                        </Container>
+                        </div>
                     );
             }
         };
@@ -420,9 +425,7 @@
 
         return (
             <div
-                ref={(el: HTMLDivElement | null) => {
-                    dropdownContainer = el;
-                }}
+                ref={dropdownContainer}
                 className="dropdown relative inline-block"
                 {...(triggerMode === 'hover' || triggerMode === 'both'
                     ? {
@@ -440,16 +443,18 @@
                     fullWidth
                     labelFullWidth
                 >
-                    <Container
-                        as="span" w={'full'} justify='between' 
-                        display="inline-flex"
-                        align="center"
-                        gap={props.gap ?? 2}
-                    >
-                        {typeof props.trigger === 'string'
-                            ? renderTriggerContent()
-                            : props.trigger}
-                    </Container>
+                    {typeof props.trigger === 'string'
+                        ? renderTriggerContent()
+                        : (
+                            <div
+                                as="span" w={'full'} justify='between'
+                                display="inline-flex"
+                                align="center"
+                                gap={props.gap ?? 2}
+                            >
+                                {props.trigger}
+                            </div>
+                        )}
                 </Button>
 
                 <MenuContainer
@@ -470,16 +475,12 @@
                             ? 'w-full min-w-fit rounded-none border-x border-b border-1 mt-0'
                             : `w-full min-w-fit rounded-md border border-1 ${initialDirection === 'down' ? 'mt-2' : ''} ${initialDirection === 'up' ? 'mb-2' : ''}`}
                     `}
-                    ref={(el: HTMLDivElement | null) => {
-                        dropdownMenu = el;
-                    }}
+                    ref={dropdownMenu}
                     children={
                         <>
                             {styleMode === 'arrow' && props.labelArrow && (
                                 <div
-                                    ref={(el: HTMLDivElement | null) => {
-                                        arrowPopup = el;
-                                    }}
+                                    ref={arrowPopup}
                                     className={`
                                         absolute
                                         ${directionMap[initialDirection].arrow}
@@ -494,10 +495,6 @@
                                 if (option.divider) {
                                     elements.push(
                                         <Divider
-                                            color="1"
-                                            opacity={50}
-                                            max={100}
-                                            thickness='super-thin'
                                             className="my-1"
                                         />
                                     );
@@ -535,10 +532,6 @@
                                 ) {
                                     elements.push(
                                         <Divider
-                                            color="1"
-                                            opacity={50}
-                                            max={100}
-                                            thickness='super-thin'
                                             className="my-1"
                                         />
                                     );

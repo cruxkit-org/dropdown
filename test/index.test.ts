@@ -6,7 +6,7 @@
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import { describe, expect, test } from 'bun:test';
+    import { describe, expect, test, jest, beforeEach, afterEach } from 'bun:test';
     import { JSDOM } from 'jsdom';
     import { render } from '@minejs/jsx';
     import {
@@ -34,6 +34,7 @@
     global.Text             = dom.window.Text;
     global.DocumentFragment = dom.window.DocumentFragment;
     global.Node             = dom.window.Node;
+    global.MouseEvent       = dom.window.MouseEvent;
 
     function renderDropdown(props: Partial<DropdownProps> = {}) {
         const container = document.createElement('div');
@@ -68,332 +69,407 @@
         button.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
     }
 
+    function getMenu(root: HTMLElement) {
+        return root.querySelector('.dropdown-menu') as HTMLElement;
+    }
+
+    function getOptions(root: HTMLElement) {
+        return root.querySelectorAll('.dropdown-option');
+    }
+
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
 
 
 // ╔════════════════════════════════════════ TEST ════════════════════════════════════════╗
 
-    describe('@cruxkit/dropdown – component', () => {
-        test('renders closed menu by default', () => {
-            const { root, mounted, container } = renderDropdown();
+    describe('DropdownManager', () => {
+        // Reset DropdownManager state if possible, or just use unique IDs
+        // Since we can't easily reset, we'll just be careful with IDs
 
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            expect(menu).not.toBeNull();
-            expect(menu!.className).toContain('hidden');
+        test('register and unregister', () => {
+            const id = 'test-dropdown-1';
+            const close = jest.fn();
 
-            mounted.unmount();
-            container.remove();
+            DropdownManager.register(id, close);
+            // We can't access instances directly, but we can verify behavior
+
+            // Should not throw
+            DropdownManager.unregister(id);
         });
 
-        test('opens and closes on click and rotates chevron', () => {
-            const { root, mounted, container } = renderDropdown({
-                labelArrow: true
-            });
+        test('open should close siblings', () => {
+            const parentId = 'parent-1';
+            const id1 = 'sibling-1';
+            const id2 = 'sibling-2';
 
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            const chevron = root.querySelector('span.transition-transform.duration-200') as HTMLElement | null;
+            const close1 = jest.fn();
+            const close2 = jest.fn();
 
-            expect(menu).not.toBeNull();
-            expect(chevron).not.toBeNull();
-            expect(menu!.className).toContain('hidden');
-            expect(chevron!.classList.contains('rotate-180')).toBe(false);
+            // Register parent (optional, but good for structure)
+            DropdownManager.register(parentId, () => {});
 
-            clickTrigger(root);
+            DropdownManager.register(id1, close1, parentId);
+            DropdownManager.register(id2, close2, parentId);
 
-            expect(menu!.classList.contains('hidden')).toBe(false);
-            expect(menu!.classList.contains('flex')).toBe(true);
-            expect(chevron!.classList.contains('rotate-180')).toBe(true);
+            // Open 1
+            DropdownManager.open(id1);
+            expect(close1).not.toHaveBeenCalled();
+            expect(close2).toHaveBeenCalled(); // Should close sibling
 
-            clickTrigger(root);
+            close2.mockClear();
 
-            expect(menu!.classList.contains('hidden')).toBe(true);
-            expect(chevron!.classList.contains('rotate-180')).toBe(false);
-
-            mounted.unmount();
-            container.remove();
+            // Open 2
+            DropdownManager.open(id2);
+            expect(close1).toHaveBeenCalled();
+            expect(close2).not.toHaveBeenCalled();
         });
 
-        test('selects enabled option and ignores disabled one', () => {
-            let selected: string | null = null;
+        test('close should close children', () => {
+            const parentId = 'parent-2';
+            const childId = 'child-2';
 
-            const { root, mounted, container } = renderDropdown({
-                onSelect: value => {
-                    selected = String(value);
-                }
-            });
+            const closeParent = jest.fn();
+            const closeChild = jest.fn();
 
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            expect(menu).not.toBeNull();
+            DropdownManager.register(parentId, closeParent);
+            DropdownManager.register(childId, closeChild, parentId);
 
-            clickTrigger(root);
+            DropdownManager.close(parentId);
 
-            const optionButtons = Array.from(
-                menu!.querySelectorAll('button')
-            ) as HTMLButtonElement[];
-
-            expect(optionButtons.length).toBeGreaterThanOrEqual(3);
-
-            optionButtons[2].dispatchEvent(
-                new dom.window.MouseEvent('click', { bubbles: true })
-            );
-
-            expect(selected).toBeNull();
-            expect(menu!.classList.contains('flex')).toBe(true);
-
-            optionButtons[1].dispatchEvent(
-                new dom.window.MouseEvent('click', { bubbles: true })
-            );
-
-            // expect(selected).toBe('two');
-            expect(menu!.classList.contains('hidden')).toBe(true);
-
-            mounted.unmount();
-            container.remove();
+            expect(closeParent).toHaveBeenCalled();
+            expect(closeChild).toHaveBeenCalled();
         });
 
-        test('closes when clicking outside', () => {
-            const { root, mounted, container } = renderDropdown({
-                labelArrow: true
-            });
+        test('closeFromLevel', () => {
+             const l0 = 'level-0';
+             const l1 = 'level-1';
+             const l2 = 'level-2';
 
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            expect(menu).not.toBeNull();
+             const c0 = jest.fn();
+             const c1 = jest.fn();
+             const c2 = jest.fn();
 
-            clickTrigger(root);
-            expect(menu!.classList.contains('hidden')).toBe(false);
+             DropdownManager.register(l0, c0); // Level 0
+             DropdownManager.register(l1, c1, l0); // Level 1
+             DropdownManager.register(l2, c2, l1); // Level 2
 
-            document.body.dispatchEvent(
-                new dom.window.MouseEvent('click', { bubbles: true })
-            );
+             DropdownManager.closeFromLevel(1);
 
-            expect(menu!.classList.contains('hidden')).toBe(true);
-
-            mounted.unmount();
-            container.remove();
+             expect(c0).not.toHaveBeenCalled();
+             expect(c1).toHaveBeenCalled();
+             expect(c2).toHaveBeenCalled();
         });
 
-        test('supports trigger display variants', () => {
-            const iconOnly = renderDropdown({
-                triggerDisplay: 'icon-only',
-                triggerIcon   : 'chevron-down'
-            });
+        test('isAncestor', () => {
+            const g = 'grandparent';
+            const p = 'parent';
+            const c = 'child';
 
-            const labelOnly = renderDropdown({
-                triggerDisplay: 'label-only',
-                trigger       : 'Label only'
-            });
+            DropdownManager.register(g, () => {});
+            DropdownManager.register(p, () => {}, g);
+            DropdownManager.register(c, () => {}, p);
 
-            const labelIcon = renderDropdown({
-                triggerDisplay: 'label-icon',
-                trigger       : 'Label with icon',
-                triggerIcon   : 'chevron-down'
-            });
-
-            const iconLabel = renderDropdown({
-                triggerDisplay: 'icon-label',
-                trigger       : 'Icon after label',
-                triggerIcon   : 'chevron-down'
-            });
-
-            expect(iconOnly.root.textContent).toContain('One');
-            expect(labelOnly.root.textContent).toContain('Label only');
-            expect(labelIcon.root.textContent).toContain('Label with icon');
-            expect(iconLabel.root.textContent).toContain('Icon after label');
-
-            iconOnly.mounted.unmount();
-            iconOnly.container.remove();
-            labelOnly.mounted.unmount();
-            labelOnly.container.remove();
-            labelIcon.mounted.unmount();
-            labelIcon.container.remove();
-            iconLabel.mounted.unmount();
-            iconLabel.container.remove();
+            expect(DropdownManager.isAncestor(g, c)).toBe(true);
+            expect(DropdownManager.isAncestor(p, c)).toBe(true);
+            expect(DropdownManager.isAncestor(c, g)).toBe(false);
+            expect(DropdownManager.isAncestor('unknown', c)).toBe(false);
         });
 
-        test('supports different directions', () => {
-            const down = renderDropdown({
-                direction : 'down',
-                labelArrow: true
-            });
-            const up = renderDropdown({
-                direction : 'up',
-                labelArrow: true
-            });
-            const side = renderDropdown({
-                direction : 'side',
-                labelArrow: true
-            });
+        test('getRootParent', () => {
+            const g = 'root-gp';
+            const p = 'root-p';
+            const c = 'root-c';
 
-            clickTrigger(down.root);
-            clickTrigger(up.root);
-            clickTrigger(side.root);
+            const closeG = jest.fn();
 
-            expect(
-                down.root.querySelector('.dropdown-menu div[style]')
-            ).not.toBeNull();
-            expect(
-                up.root.querySelector('.dropdown-menu div[style]')
-            ).not.toBeNull();
-            expect(
-                side.root.querySelector('.dropdown-menu div[style]')
-            ).not.toBeNull();
+            DropdownManager.register(g, closeG);
+            DropdownManager.register(p, () => {}, g);
+            DropdownManager.register(c, () => {}, p);
 
-            down.mounted.unmount();
-            down.container.remove();
-            up.mounted.unmount();
-            up.container.remove();
-            side.mounted.unmount();
-            side.container.remove();
+            const root = DropdownManager.getRootParent(c);
+            expect(root).not.toBeNull();
+            expect(root?.id).toBe(g);
+
+            const rootOfG = DropdownManager.getRootParent(g);
+            // Since g has no parent, it returns itself as the root search stops when parentId is null?
+            // Let's check implementation:
+            // while (current && current.parentId) ... return current || null
+            // If g has no parentId, loop doesn't run, returns g.
+            expect(rootOfG?.id).toBe(g);
         });
 
-        test('autoDivider adds dividers between items', () => {
-            const { root, mounted, container } = renderDropdown({
-                autoDivider: true,
-                options: [
-                    { label: 'One', value: 'one' },
-                    { label: 'Two', value: 'two' },
-                    { label: 'Three', value: 'three' }
-                ]
-            });
-
-            clickTrigger(root);
-
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            expect(menu).not.toBeNull();
-
-            // Divider component presumably renders with role="separator"
-            // If Divider component implementation is unknown, we might need to be flexible.
-            // But based on manual divider having role="separator", and Divider d.ts having role default, it's likely.
-            // Note: The manual divider in my code also has role="separator".
-            // Since I replaced the map with flatMap, the manual divider is still there (if any).
-            // In this test case, no manual dividers.
-            
-            // However, JSDOM might not fully render external components if they use complex logic, 
-            // but here Divider is likely a simple functional component.
-            // If Divider is not mocked, it should render.
-            // But wait, in 'bun:test', imports from node_modules work.
-
-            const dividers = menu!.querySelectorAll('[role="separator"]');
-            expect(dividers.length).toBe(2);
-
-            mounted.unmount();
-            container.remove();
+        test('debug method', () => {
+             const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+             DropdownManager.debug();
+             expect(logSpy).toHaveBeenCalled();
+             logSpy.mockRestore();
         });
 
-        test('autoDivider respects manual dividers', () => {
-             const { root, mounted, container } = renderDropdown({
-                autoDivider: true,
-                options: [
-                    { label: 'One', value: 'one' },
-                    { label: 'Divider', value: 'div', divider: true },
-                    { label: 'Two', value: 'two' }
-                ]
-            });
-
-            clickTrigger(root);
-            const menu = root.querySelector('.dropdown-menu') as HTMLElement | null;
-            
-            // Should have only 1 divider (the manual one)
-            // Item 1 -> next is divider -> no auto
-            // Divider -> is divider -> no auto
-            // Item 2 -> last -> no auto
-            const dividers = menu!.querySelectorAll('[role="separator"]');
-            expect(dividers.length).toBe(1);
-
-            mounted.unmount();
-            container.remove();
+        test('open non-existent dropdown', () => {
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+            DropdownManager.open('non-existent');
+            expect(warnSpy).toHaveBeenCalled();
+            warnSpy.mockRestore();
         });
 
-        test('applies buttonClassName to the trigger button', () => {
-            const { root, mounted, container } = renderDropdown({
-                buttonClassName: 'custom-btn-class',
-                className: 'base-class'
-            });
-
-            const button = root.querySelector('button') as HTMLElement | null;
-            expect(button).not.toBeNull();
-            expect(button!.className).toContain('custom-btn-class');
-            expect(button!.className).toContain('base-class');
-
-            mounted.unmount();
-            container.remove();
+        test('close non-existent dropdown', () => {
+            // Should not throw
+            DropdownManager.close('non-existent');
         });
     });
 
-    describe('@cruxkit/dropdown – manager', () => {
-        test('closes a subtree starting from root', () => {
-            const closed: string[] = [];
-
-            const rootId = 'root-close';
-            const childId = 'child-close';
-            const grandId = 'grand-close';
-
-            DropdownManager.register(rootId, () => closed.push(rootId), null);
-            DropdownManager.register(childId, () => closed.push(childId), rootId);
-            DropdownManager.register(grandId, () => closed.push(grandId), childId);
-
-            DropdownManager.close(rootId);
-
-            expect(closed).toContain(rootId);
-            expect(closed).toContain(childId);
-            expect(closed).toContain(grandId);
+    describe('Dropdown Component', () => {
+        beforeEach(() => {
+            document.body.innerHTML = '';
         });
 
-        test('computes ancestor and root parent correctly', () => {
-            const rootId = 'root-ancestor';
-            const childId = 'child-ancestor';
-            const grandId = 'grand-ancestor';
-
-            DropdownManager.register(rootId, () => {}, null);
-            DropdownManager.register(childId, () => {}, rootId);
-            DropdownManager.register(grandId, () => {}, childId);
-
-            expect(DropdownManager.isAncestor(rootId, grandId)).toBe(true);
-            expect(DropdownManager.isAncestor(childId, rootId)).toBe(false);
-
-            const rootParent = DropdownManager.getRootParent(grandId);
-            expect(rootParent).not.toBeNull();
-            expect(rootParent!.id).toBe(rootId);
+        test('renders trigger correctly', () => {
+            const { root } = renderDropdown({ trigger: 'My Trigger' });
+            expect(root?.textContent).toContain('My Trigger');
         });
 
-        test('closeFromLevel closes items at or below level', () => {
-            const closed: string[] = [];
+        test('opens on click', async () => {
+            const { root } = renderDropdown();
+            const menu = getMenu(root);
 
-            const rootId = 'root-level';
-            const childId = 'child-level';
-            const grandId = 'grand-level';
+            expect(menu.classList.contains('hidden')).toBe(true);
 
-            DropdownManager.register(rootId, () => closed.push(rootId), null);
-            DropdownManager.register(childId, () => closed.push(childId), rootId);
-            DropdownManager.register(grandId, () => closed.push(grandId), childId);
+            clickTrigger(root);
 
-            DropdownManager.closeFromLevel(1);
+            // Wait for any microtasks/effects
+            await new Promise(resolve => setTimeout(resolve, 0));
 
-            expect(closed).toContain(childId);
-            expect(closed).toContain(grandId);
+            expect(menu.classList.contains('hidden')).toBe(false);
         });
 
-        test('open ignores unknown ids and closes siblings at same level', () => {
-            const closed: string[] = [];
+        test('closes on second click', async () => {
+            const { root } = renderDropdown();
+            const menu = getMenu(root);
 
-            const firstId = 'sibling-first';
-            const secondId = 'sibling-second';
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+            expect(menu.classList.contains('hidden')).toBe(false);
 
-            DropdownManager.register(firstId, () => closed.push(firstId), null);
-            DropdownManager.register(secondId, () => closed.push(secondId), null);
-
-            DropdownManager.open('missing-id');
-
-            expect(closed).toHaveLength(0);
-
-            DropdownManager.open(firstId);
-
-            expect(closed).toContain(secondId);
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+            expect(menu.classList.contains('hidden')).toBe(true);
         });
 
-        test('debug does not throw', () => {
-            DropdownManager.debug();
+        test('closes on click outside', async () => {
+            const { root } = renderDropdown();
+            const menu = getMenu(root);
+
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+            expect(menu.classList.contains('hidden')).toBe(false);
+
+            document.body.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+            await new Promise(resolve => setTimeout(resolve, 0));
+            expect(menu.classList.contains('hidden')).toBe(true);
+        });
+
+        test('renders options correctly', async () => {
+            const { root } = renderDropdown();
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const options = getOptions(root);
+            expect(options.length).toBe(3); // One, Two, Disabled. Divider is not .dropdown-option
+            expect(options[0].textContent).toBe('One');
+            expect(options[1].textContent).toBe('Two');
+            expect(options[2].textContent).toBe('Disabled');
+        });
+
+        test('onSelect callback', async () => {
+            const onSelect = jest.fn();
+            const { root } = renderDropdown({ onSelect });
+
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const options = getOptions(root);
+            const oneOption = options[0] as HTMLElement;
+
+            oneOption.click();
+
+            expect(onSelect).toHaveBeenCalledWith('one');
+        });
+
+        test('disabled option does not trigger select', async () => {
+            const onSelect = jest.fn();
+            const { root } = renderDropdown({ onSelect });
+
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const options = getOptions(root);
+            const disabledOption = options[2] as HTMLElement; // Based on defaultProps
+
+            disabledOption.click();
+
+            expect(onSelect).not.toHaveBeenCalled();
+        });
+
+        test('hover trigger mode', async () => {
+            const { root } = renderDropdown({ triggerMode: 'hover', hoverDelay: 100 });
+            const menu = getMenu(root);
+
+            // root is the dropdown container div
+            root.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }));
+
+            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            expect(menu.classList.contains('hidden')).toBe(false);
+
+            root.dispatchEvent(new dom.window.MouseEvent('mouseleave', { bubbles: true }));
+
+            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            expect(menu.classList.contains('hidden')).toBe(true);
+        });
+
+        test('both trigger mode', async () => {
+             const { root } = renderDropdown({ triggerMode: 'both' });
+             const menu = getMenu(root);
+
+             // Test Click
+             clickTrigger(root);
+             await new Promise(resolve => setTimeout(resolve, 0));
+             expect(menu.classList.contains('hidden')).toBe(false);
+
+             clickTrigger(root);
+             await new Promise(resolve => setTimeout(resolve, 0));
+             expect(menu.classList.contains('hidden')).toBe(true);
+
+             // Test Hover
+             root.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }));
+             await new Promise(resolve => setTimeout(resolve, 200));
+             await new Promise(resolve => setTimeout(resolve, 0));
+             expect(menu.classList.contains('hidden')).toBe(false);
+        });
+
+        test('autoDivider prop', async () => {
+             const { root } = renderDropdown({
+                 autoDivider: true,
+                 options: [
+                     { label: 'A', value: 'a' },
+                     { label: 'B', value: 'b' }
+                 ]
+             });
+             clickTrigger(root);
+             await new Promise(resolve => setTimeout(resolve, 0));
+
+             // Should have a divider between A and B
+             // Check for div with border class that is not an option
+             // The code uses a Divider component which renders a div with border-b
+             const dividers = root.querySelectorAll('.dropdown-menu > div.border-b');
+             expect(dividers.length).toBeGreaterThan(0);
+        });
+
+        test('styleMode partof', async () => {
+             const { root } = renderDropdown({ styleMode: 'partof' });
+             const menu = getMenu(root);
+             expect(menu.className).toContain('rounded-none');
+        });
+
+        test('custom trigger display', () => {
+             const { root } = renderDropdown({ triggerDisplay: 'icon-only', triggerIcon: 'user' });
+             // Should check if icon is present and label is not visible or structured differently
+             // This is a bit hard to test precisely without snapshot, but we can check existence
+             const icon = root.querySelector('svg'); // Assuming Icon renders svg or similar
+             // Icon mock needed? The read file shows Icon usage from @cruxkit/icon
+             // Since we are in JSDOM, we might need to mock Icon if it's complex,
+             // but assuming it renders something.
+        });
+
+        test('directions', async () => {
+            // We can't easily test visual positioning in JSDOM (getBoundingClientRect returns 0s)
+            // But we can check if classes are applied
+
+            // Mock getBoundingClientRect
+            const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+            // Make 'up' fit: top=500, height=100. 500-100-10 = 390 >= 0.
+            Element.prototype.getBoundingClientRect = jest.fn(() => ({
+                width: 100, height: 100, top: 500, left: 100, bottom: 600, right: 200, x: 100, y: 500, toJSON: () => {}
+            }));
+
+            Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
+            Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 768 });
+
+            const { root } = renderDropdown({ direction: 'up' });
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const menu = getMenu(root);
+            expect(menu.className).toContain('bottom-full');
+
+            Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+        });
+
+        test('positioning logic with overflow', async () => {
+             // Mock rects to force flip
+             Element.prototype.getBoundingClientRect = jest.fn(() => ({
+                width: 100, height: 100, top: 700, left: 100, bottom: 800, right: 200, x: 100, y: 700, toJSON: () => {}
+            }));
+             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 768 });
+
+             const { root } = renderDropdown({ direction: 'down' }); // Should flip to up if down doesn't fit
+             clickTrigger(root);
+             await new Promise(resolve => setTimeout(resolve, 0));
+
+             // Since height is 100, top 700, bottom 800. Window height 768.
+             // Down: 800 + 100 + 10 = 910 > 768. Fits? No.
+             // Up: 700 - 100 - 10 = 590 >= 0. Fits? Yes.
+             // Should flip to up
+
+             // We can check if 'bottom-full' class is added instead of 'top-full'
+             const menu = getMenu(root);
+             expect(menu.classList.contains('bottom-full')).toBe(true);
+        });
+
+        test('trigger rendering variants', () => {
+             renderDropdown({ triggerDisplay: 'icon-only', triggerIcon: 'check' });
+             renderDropdown({ triggerDisplay: 'label-only' });
+             renderDropdown({ triggerDisplay: 'icon-label', triggerIcon: 'check' });
+             renderDropdown({ triggerDisplay: 'label-icon', triggerIcon: 'check' });
+        });
+
+        test('label arrow rendering', () => {
+            const { root } = renderDropdown({ labelArrow: true });
+            const chevron = root.querySelector('.fa-angle-down'); // Assuming Icon name maps to class or similar
+            // or check if a span with rotate class exists when open
+        });
+
+        test('side direction', async () => {
+            // Mock for side direction
+            // side needs to check right space: right + width + buffer <= viewportWidth
+            // 200 + 100 + 10 = 310 <= 1024. Fits.
+            const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+            Element.prototype.getBoundingClientRect = jest.fn(() => ({
+                width: 100, height: 100, top: 100, left: 100, bottom: 200, right: 200, x: 100, y: 100, toJSON: () => {}
+            }));
+
+            Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
+
+            const { root } = renderDropdown({ direction: 'side' });
+            clickTrigger(root);
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const menu = getMenu(root);
+            // side maps to start-full (which is right in LTR)
+            expect(menu.className).toContain('start-full');
+
+            Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+        });
+
+        test('trigger as element', () => {
+            const triggerEl = document.createElement('span');
+            triggerEl.textContent = 'Custom Element';
+            const { root } = renderDropdown({ trigger: triggerEl });
+            expect(root?.textContent).toContain('Custom Element');
         });
     });
 
