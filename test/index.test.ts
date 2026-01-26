@@ -365,8 +365,17 @@
              // Should have a divider between A and B
              // Check for div with border class that is not an option
              // The code uses a Divider component which renders a div with border-b
-             const dividers = root.querySelectorAll('.dropdown-menu > div.border-b');
-             expect(dividers.length).toBeGreaterThan(0);
+             const menu = getMenu(root);
+             const children = Array.from(menu.children);
+             
+             // We expect Option A, Divider, Option B (3 elements)
+             // If labelArrow was present, it would be 4, but default is false.
+             expect(children.length).toBeGreaterThanOrEqual(3);
+             
+             // Find the divider (it shouldn't be a button)
+             const divider = children.find(child => child.tagName !== 'BUTTON' && !child.classList.contains('absolute'));
+             expect(divider).not.toBeUndefined();
+             expect(divider?.className).toContain('border');
         });
 
         test('styleMode partof', async () => {

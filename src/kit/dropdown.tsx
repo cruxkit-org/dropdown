@@ -6,17 +6,12 @@
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import type { JSXProps, JSXElement }        from '@minejs/jsx';
+    import { type JSXProps, type JSXElement, Divider } from '@minejs/jsx';
     import { signal, effect, type Signal }      from '@minejs/signals';
     import { DropdownManager }                  from './manager';
     import { Button }                           from '@cruxkit/button';
     import { Icon, type IconProps, type IconName } from '@cruxkit/icon';
     import type { DropdownProps, DropdownSize, DropdownPosition, DropdownDirection } from '../types';
-
-    // Local Components
-    const Divider = ({ className }: { className?: string }) => (
-        <div className={`w-full border-b border-border-1 opacity-50 ${className || ''}`} />
-    );
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -388,8 +383,8 @@
                 default:
                     return (
                         <div as="span" w={'full'} justify='between' display="inline-flex" align="center" gap={props.gap ?? 2}>
-                            {iconElement}
                             {label}
+                            {iconElement}
                             {renderChevron()}
                         </div>
                     );
@@ -494,9 +489,7 @@
 
                                 if (option.divider) {
                                     elements.push(
-                                        <Divider
-                                            className="my-1"
-                                        />
+                                        <Divider spacing={1} />
                                     );
                                 } else {
                                     elements.push(
